@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaContentService.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MediaContentService.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -24,6 +26,7 @@ namespace MediaContentService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            MediaStoreContext.ConfigureModel();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,8 +36,9 @@ namespace MediaContentService
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseMediaStoreAuth();
             app.UseMvc();
         }
+  
     }
 }
