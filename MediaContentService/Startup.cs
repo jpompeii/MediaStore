@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MediaContentService.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MediaContentService.Services;
 
 namespace MediaContentService
 {
@@ -25,7 +26,10 @@ namespace MediaContentService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            IFileCache cache = new FileCache(Configuration);
+            IFileStore fileStore = new FileStore(cache);
 
+            services.AddSingleton(typeof(IFileStore), fileStore);
             services.AddMvc();
             MediaStoreContext.ConfigureModel();
         }

@@ -104,6 +104,14 @@ namespace MediaContentService.Model
                 cm.MapIdMember(c => c.Id).SetIdGenerator(StringObjectIdGenerator.Instance);
             });
 
+            BsonClassMap.RegisterClassMap<Asset>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapIdMember(c => c.Id).SetIdGenerator(StringObjectIdGenerator.Instance);
+                cm.MapExtraElementsMember(c => c.MetadataElements);
+                cm.UnmapProperty(c => c.Library);
+            });
+
             typedCollections[typeof(Library).Name] = "libraries";
             typedCollections[typeof(Account).Name] = "accounts";
         }

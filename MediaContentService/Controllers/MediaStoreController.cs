@@ -10,6 +10,7 @@ using MongoDB.Driver;
 using System.Net.Http;
 using System.IO;
 using MediaContentService.Services;
+using MongoDB.Bson;
 
 namespace MediaContentService.Controllers
 {
@@ -60,43 +61,54 @@ namespace MediaContentService.Controllers
             Library lib = Context.FindLibrary(libName);
             if (lib != null)
                 return BadRequest();
-            
+
             lib = new Library()
             {
                 Account = (Account)HttpContext.Items["Account"],
-                LibraryName = libName
+                LibraryName = libName,
+                AssetCollection = $"assets_{Path.GetFileNameWithoutExtension(Path.GetTempFileName())}"
             };
 
             Context.Libraries.InsertOne(lib);
             return Ok(LibraryValue.FromModel(lib));
         }
 
-        [HttpPost("libraries/libid/asset")]
-        public async Task<IActionResult> BasicUpload(List<IFormFile> files)
+        [HttpPost("libraries/{libid}/asset")]
+        public async Task<IActionResult> BasicUpload(List<IFormFile> files, string libid)
         {
-            long size = files.Sum(f => f.Length);
+            Library lib = Context.FindObjectById<Library>(libid);
+            if (lib == null)
+                return NotFound();
 
+            List<AssetValue> results = new List<AssetValue>();
             foreach (var formFile in files)
             {
                 if (formFile.Length > 0)
                 {
-                    // create and save new asset document from formFile
-
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    var fileId = fileStore.CreateFileId();
+                    var asset = new Asset();
+                    asset.Name = formFile.FileName;
+                    asset.Library = lib;
+                    asset.AssetFiles.Add(new AssetFile
                     {
-                        // call fileStore(Asset.Id, stream)
-                        await formFile.CopyToAsync(stream);
-                    }
+                        SourceFileName = formFile.FileName,
+                        MimeType = formFile.ContentType,
+                        ResourceId = fileId,
+                        ComponentType = FileComponent.RootFile,
+                        Version = 1
+                    });
+
+                    // add object to the db async.
+                    Task addTask = asset.AddToCollection(lib.AssetCollection);
+
+                    // write the content on the current thread
+                    fileStore.SaveFile(fileId, formFile.OpenReadStream());
+                    await addTask;
+
+                    results.Add(AssetValue.FromModel(asset));
                 }
-            }
-
-
-
-            // process uploaded files
-            // Don't rely on or trust the FileName property without validation.
-
-            return Ok(new { count = files.Count, size, filePath });
+            }           
+            return Ok(results);
         }
 
 

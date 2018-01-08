@@ -7,6 +7,7 @@ namespace MediaContentService.Model
         public string Id { get; private set; }
         public string AccountId { get; private set; }
         public string LibraryName { get; set; }
+        public string AssetCollection { get; set; }
         private Account _account;
 
         public Account Account
