@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "mscli": {
+      "commandName": "Project",
+      "commandLineArgs": "put http://localhost:32076 media d:\\temp\\secant.jpg"
+    }
+  }
+}

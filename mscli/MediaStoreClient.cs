@@ -33,14 +33,16 @@ namespace MediaStore.Client
             return libraries.Where(c => c.LibraryName == libName).FirstOrDefault();
         }
 
-        public async Task<string> AddFileAsync(string filePath, string libraryId)
+        public async Task<Asset> AddFileAsync(string filePath, string libraryId)
         {
             byte[] fileBytes = File.ReadAllBytes(filePath);
             ByteArrayContent bytes = new ByteArrayContent(fileBytes);
             MultipartFormDataContent multiContent = new MultipartFormDataContent();
             multiContent.Add(bytes, "file", Path.GetFileName(filePath));
             var result = await _client.PostAsync($"api/mediastore/libraries/{libraryId}/asset", multiContent);
-            return result.Content.ReadAsStringAsync().Result;
+            var json = result.Content.ReadAsStreamAsync().Result;
+            var serializer = new DataContractJsonSerializer(typeof(Asset));
+            return serializer.ReadObject(json) as Asset;
         }
     }
 }
