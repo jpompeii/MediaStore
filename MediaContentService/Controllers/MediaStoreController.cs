@@ -50,6 +50,14 @@ namespace MediaContentService.Controllers
                 return NotFound();
         }
 
+        [HttpGet("libraries")]
+        public IActionResult GetLibrariesForAccount()
+        {
+            Account acct = (Account)HttpContext.Items["Account"];
+            return Ok(LibraryValue.FromModel(acct.Libraries));
+        }
+
+
         [HttpPut("libraries")]
         public IActionResult CreateLibrary([FromBody] LibraryValue libValue)
         {

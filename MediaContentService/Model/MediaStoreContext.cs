@@ -88,6 +88,17 @@ namespace MediaContentService.Model
             return cltn.Find(filter).FirstOrDefault();
         }
 
+        public IList<T> GetOneToMany<T>(string relationProp, string id)
+        {
+            string cltnName = typedCollections[typeof(T).Name];
+            var cltn = Database.GetCollection<T>(cltnName);
+            var filter = new BsonDocument
+            {
+                { relationProp, id }
+            };
+            return cltn.Find(filter).ToList();
+        }
+
         public static void ConfigureModel()
         {
             BsonClassMap.RegisterClassMap<Library>(cm =>

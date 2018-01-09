@@ -11,6 +11,7 @@ using MediaContentService.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MediaContentService.Services;
+using Newtonsoft.Json.Serialization;
 
 namespace MediaContentService
 {
@@ -30,7 +31,16 @@ namespace MediaContentService
             IFileStore fileStore = new FileStore(cache);
 
             services.AddSingleton(typeof(IFileStore), fileStore);
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(opt =>
+            {
+                var resolver = opt.SerializerSettings.ContractResolver;
+                if (resolver != null)
+                {
+                    var res = resolver as DefaultContractResolver;
+                    res.NamingStrategy = null;  // this removes the camelcasing
+                }
+            });
+
             MediaStoreContext.ConfigureModel();
         }
 

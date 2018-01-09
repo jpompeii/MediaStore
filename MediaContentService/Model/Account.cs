@@ -14,5 +14,13 @@ namespace MediaContentService.Model
         public Account()
         {
         }
+
+        public IEnumerable<Library> Libraries
+        {
+            get
+            {
+                return MediaStoreContext.GetContext().GetOneToMany<Library>("AccountId", Id);
+            }
+        }
     }
 }

@@ -30,10 +30,5 @@ namespace MediaContentService.Model
         {
             _account = null;
         }
-
-        public void SetAccount(Account account)
-        {
-            
-        }
     }
 }

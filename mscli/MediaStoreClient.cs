@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,12 +23,14 @@ namespace MediaStore.Client
             _client.BaseAddress = new Uri(baseUrl);
         }
 
-        public string GetLibraryAsync(string libName)
+        public async Task<Library> GetLibraryAsync(string libName)
         {
-            var result = _client.GetAsync("api/mediastore/libraries").Result;
-            var json = result.Content.ReadAsStringAsync().Result;
-            var libraries = JsonConvert.DeserializeObject<List<LibraryValue>>(responseBody);
-            
+            var result = await _client.GetAsync("api/mediastore/libraries");
+            var jsonString = result.Content.ReadAsStringAsync().Result;
+            var json = result.Content.ReadAsStreamAsync().Result;
+            var serializer = new DataContractJsonSerializer(typeof(List<Library>));
+            var libraries = serializer.ReadObject(json) as List<Library>;
+            return libraries.Where(c => c.LibraryName == libName).FirstOrDefault();
         }
 
         public async Task<string> AddFileAsync(string filePath, string libraryId)
