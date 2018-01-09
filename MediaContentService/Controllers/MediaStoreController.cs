@@ -30,11 +30,11 @@ namespace MediaContentService.Controllers
         // GET mediastore/{libname}/objects/objectid
         // GET mediastore/{libname}
 
-        FileStore fileStore;
+        IFileStore fileStore;
 
         public MediaStoreContext Context { get; private set; }
 
-        public MediaStoreController(FileStore fileStore)
+        public MediaStoreController(IFileStore fileStore)
         {
             this.fileStore = fileStore;
             Context = MediaStoreContext.GetContext();
@@ -66,7 +66,7 @@ namespace MediaContentService.Controllers
             {
                 Account = (Account)HttpContext.Items["Account"],
                 LibraryName = libName,
-                AssetCollection = $"assets_{Path.GetFileNameWithoutExtension(Path.GetTempFileName())}"
+                AssetCollection = $"assets_{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}"
             };
 
             Context.Libraries.InsertOne(lib);

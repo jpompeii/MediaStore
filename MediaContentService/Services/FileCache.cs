@@ -36,7 +36,7 @@ namespace MediaContentService.Services
 
 		public FileCache(IConfiguration config)
 		{
-			_rootDir = config[""].TrimEnd();
+			_rootDir = config["FileStoreRoot"].TrimEnd();
 			_itemCountThreshold = 1024;
 
 			if (!_rootDir.EndsWith(_sep))
