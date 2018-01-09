@@ -81,26 +81,28 @@ namespace MediaContentService.Controllers
             return Ok(LibraryValue.FromModel(lib));
         }
 
-        [HttpPost("libraries/{libid}/asset")]
-        public async Task<IActionResult> BasicUpload(List<IFormFile> files, string libid)
+        [HttpPost("libraries/{libid}/assets")]
+        public async Task<IActionResult> BasicUpload(IFormCollection formCollection, string libid)
         {
             Library lib = Context.FindObjectById<Library>(libid);
             if (lib == null)
                 return NotFound();
 
+            var files = formCollection.Files;
             List<AssetValue> results = new List<AssetValue>();
             foreach (var formFile in files)
             {
                 if (formFile.Length > 0)
                 {
-                    var fileId = fileStore.CreateFileId();
+                    var fileExt = Path.GetExtension(formFile.FileName);
+                    var fileId = $"{fileStore.CreateFileId()}{fileExt}";
                     var asset = new Asset();
                     asset.Name = formFile.FileName;
                     asset.Library = lib;
                     asset.AssetFiles.Add(new AssetFile
                     {
                         SourceFileName = formFile.FileName,
-                        MimeType = formFile.ContentType,
+                        MimeType = Mime.GetMimeFromExt(fileExt),
                         ResourceId = fileId,
                         ComponentType = FileComponent.RootFile,
                         Version = 1
@@ -110,14 +112,23 @@ namespace MediaContentService.Controllers
                     Task addTask = asset.AddToCollection(lib.AssetCollection);
 
                     // write the content on the current thread
-                    fileStore.SaveFile(fileId, formFile.OpenReadStream());
-                    await addTask;
+                    using (Stream inStream = formFile.OpenReadStream())
+                        fileStore.SaveFile(fileId, inStream);
 
+                    await addTask;
                     results.Add(AssetValue.FromModel(asset));
                 }
             }           
             return Ok(results);
         }
+
+        [HttpGet("libraries/{libid}/assets")]
+        public IActionResult GetAllAssets(string libid, [FromQuery]int? startIndex, [FromQuery]int? endIndex)
+        {
+            ICollection<Asset> assets =  Context.GetAssets(libid, startIndex, endIndex);
+
+        }
+
 
 
         // for now

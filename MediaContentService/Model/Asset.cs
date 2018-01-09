@@ -25,6 +25,8 @@ namespace MediaContentService.Model
         public Asset()
         {
             DateCreated = LastUpdate = DateTime.UtcNow;
+            AssetFiles = new List<AssetFile>();
+            MetadataElements = new BsonDocument();
         }
 
         public Library Library

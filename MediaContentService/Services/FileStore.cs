@@ -23,7 +23,7 @@ namespace MediaContentService.Services
         public string CreateFileId(string fileName = null)
         {
             if (fileName == null)
-                fileName = Path.GetFileNameWithoutExtension(Path.GetTempFileName());
+                fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
 
             string relPath = String.Empty;
             string fullPath = String.Empty;
@@ -34,8 +34,9 @@ namespace MediaContentService.Services
         public string SaveFile(string fileId, Stream inStream)
         {
             string fullPath = fileCache.GetDirectory(fileId).ToString();
-            FileStream outStream = new FileStream(fullPath, FileMode.CreateNew);
-            inStream.CopyTo(outStream);
+            using (FileStream outStream = new FileStream(fullPath, FileMode.CreateNew))
+                inStream.CopyTo(outStream);
+
             return fileId;
         }
     }

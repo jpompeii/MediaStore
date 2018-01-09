@@ -58,7 +58,7 @@ namespace MediaContentService.Services
 				int currentDir = GetCurrentSubDir(path, out count);
 				_currentPath[i] = currentDir;
 				_dirCounts[i] = count;
-				if (count == 0 && i < _currentPath.Length - 1)
+				if (count == 0 && i < _currentPath.Length)
 				{
 					Directory.CreateDirectory(path + "0");
 				}
@@ -114,14 +114,21 @@ namespace MediaContentService.Services
 
             if (_currentFileCount < 0 || (_currentFileCount % 100) == 0)
             {
-                _currentFileCount = Directory.EnumerateFiles(currPath).AsParallel().Count();
+                try
+                {
+                    IEnumerable<string> files = Directory.EnumerateFiles(currPath);
+                    _currentFileCount = files.Count();
+                }
+                catch (Exception ex)
+                { }
             }
             if (_currentFileCount > _itemCountThreshold)
             {
                 TryNextDirectory(out currRelPath);
+                Directory.CreateDirectory(_rootDir + currRelPath);
                 _currentFileCount = Directory.EnumerateFiles($"{_rootDir}{currRelPath}").AsParallel().Count();
             }
-            relPath = $"{currRelPath}{_sep}{fileName}";
+            relPath = $"{currRelPath}{fileName}";
             fullPath = $"{_rootDir}{relPath}";
         }
 

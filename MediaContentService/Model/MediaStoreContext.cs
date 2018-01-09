@@ -99,6 +99,18 @@ namespace MediaContentService.Model
             return cltn.Find(filter).ToList();
         }
 
+        public IList<Asset> GetAssets(string libId, int? start, int? count)
+        {
+            string cltnName = typedCollections[typeof(Asset).Name];
+            var cltn = Database.GetCollection<Asset>(cltnName);
+            var filter = new BsonDocument
+            {
+                { "LibraryId", libId }
+            };
+            return cltn.Find(filter).ToList();
+        }
+
+
         public static void ConfigureModel()
         {
             BsonClassMap.RegisterClassMap<Library>(cm =>
