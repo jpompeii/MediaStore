@@ -1,6 +1,8 @@
 ﻿
 using MediaContentService.Model;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MediaContentService.ValueTypes
 {
@@ -31,6 +33,11 @@ namespace MediaContentService.ValueTypes
                     Library = LibraryValue.FromModel(asset.Library)
                 }
             };
+        }
+
+        public static IList<AssetValue> FromModel(IEnumerable<Asset> modelLibs)
+        {
+            return modelLibs.Select(l => FromModel(l)).ToList();
         }
     }
 }

@@ -123,13 +123,15 @@ namespace MediaContentService.Controllers
         }
 
         [HttpGet("libraries/{libid}/assets")]
-        public IActionResult GetAllAssets(string libid, [FromQuery]int? startIndex, [FromQuery]int? endIndex)
+        public IActionResult GetAllAssets(string libid, [FromQuery]string lastId = null, [FromQuery]int count = 0)
         {
-            ICollection<Asset> assets =  Context.GetAssets(libid, startIndex, endIndex);
+            Library lib = Context.FindObjectById<Library>(libid);
+            if (lib == null)
+                return NotFound();
 
+            ICollection<Asset> assets =  Context.GetAssets(lib, lastId, count);
+            return Ok(AssetValue.FromModel(assets));
         }
-
-
 
         // for now
         [HttpPut("accounts/{acctName}")]

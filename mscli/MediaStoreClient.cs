@@ -41,9 +41,10 @@ namespace MediaStore.Client
             ByteArrayContent bytes = new ByteArrayContent(fileBytes);
             MultipartFormDataContent multiContent = new MultipartFormDataContent();
             multiContent.Add(bytes, "file", Path.GetFileName(filePath));
-            var result = await _client.PostAsync($"api/mediastore/libraries/{libraryId}/asset", multiContent);
+            var result = await _client.PostAsync($"api/mediastore/libraries/{libraryId}/assets", multiContent);
             if (result.IsSuccessStatusCode)
             {
+                var jsonString = result.Content.ReadAsStringAsync().Result;
                 var json = result.Content.ReadAsStreamAsync().Result;
                 var serializer = new DataContractJsonSerializer(typeof(List<Asset>));
                 IList<Asset> assets = serializer.ReadObject(json) as List<Asset>;

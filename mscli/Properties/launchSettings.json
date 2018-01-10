@@ -2,7 +2,7 @@
   "profiles": {
     "mscli": {
       "commandName": "Project",
-      "commandLineArgs": "put http://localhost:32076 media c:\\temp\\albert.jpg"
+      "commandLineArgs": "put http://localhost:32076 media d:\\temp\\secant.jpg"
     }
   }
 }
