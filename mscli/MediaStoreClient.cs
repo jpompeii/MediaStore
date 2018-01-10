@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MediaStore.Client
@@ -17,8 +16,10 @@ namespace MediaStore.Client
         public MediaStoreClient(string baseUrl)
         {
             _baseUrl = baseUrl;
-            _client = new HttpClient();
-            _client.BaseAddress = new Uri(baseUrl);
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri(baseUrl)
+            };
         }
 
         public async Task<Library> GetLibraryAsync(string libName)
@@ -26,9 +27,8 @@ namespace MediaStore.Client
             var result = await _client.GetAsync("api/mediastore/libraries");
             if (result.IsSuccessStatusCode)
             {
-                var json = result.Content.ReadAsStreamAsync().Result;
-                var serializer = new DataContractJsonSerializer(typeof(List<Library>));
-                var libraries = serializer.ReadObject(json) as List<Library>;
+                var jsonString = result.Content.ReadAsStringAsync().Result;
+                var libraries = JsonConvert.DeserializeObject<List<Library>>(jsonString);
                 return libraries.Where(c => c.LibraryName == libName).FirstOrDefault();
             }
             else
@@ -39,15 +39,16 @@ namespace MediaStore.Client
         {
             byte[] fileBytes = File.ReadAllBytes(filePath);
             ByteArrayContent bytes = new ByteArrayContent(fileBytes);
-            MultipartFormDataContent multiContent = new MultipartFormDataContent();
-            multiContent.Add(bytes, "file", Path.GetFileName(filePath));
+            MultipartFormDataContent multiContent = new MultipartFormDataContent
+            {
+                { bytes, "file", Path.GetFileName(filePath) }
+            };
             var result = await _client.PostAsync($"api/mediastore/libraries/{libraryId}/assets", multiContent);
             if (result.IsSuccessStatusCode)
             {
                 var jsonString = result.Content.ReadAsStringAsync().Result;
-                var json = result.Content.ReadAsStreamAsync().Result;
-                var serializer = new DataContractJsonSerializer(typeof(List<Asset>));
-                IList<Asset> assets = serializer.ReadObject(json) as List<Asset>;
+                // var json = result.Content.ReadAsStreamAsync().Result;
+                IList<Asset> assets = JsonConvert.DeserializeObject<List<Asset>>(jsonString); 
                 return assets.FirstOrDefault();
             }
             else

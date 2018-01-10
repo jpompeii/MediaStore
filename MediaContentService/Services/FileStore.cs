@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MediaContentService.Services
 {
@@ -15,9 +12,10 @@ namespace MediaContentService.Services
             this.fileCache = fileCache;
         }
 
-        public Stream ReadFile(string fileUrl)
+        public Stream ReadFile(string fileId)
         {
-            throw new NotImplementedException();
+            string fullPath = fileCache.GetDirectory(fileId).ToString();
+            return new FileStream(fullPath, FileMode.Open, FileAccess.Read);
         }
 
         public string CreateFileId(string fileName = null)

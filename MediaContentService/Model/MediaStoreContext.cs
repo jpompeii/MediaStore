@@ -49,11 +49,11 @@ namespace MediaContentService.Model
             }
         }
 
-        public Library FindLibrary(string id)
+        public Library FindLibrary(string name)
         {
             var filter = new BsonDocument
             {
-                { "LibraryName", id }
+                { "LibraryName", name }
             };
 
             // var filter = $"{{ LibraryName: \"{id}\"}}";
@@ -68,11 +68,11 @@ namespace MediaContentService.Model
             }
         }
 
-        public Account FindAccount(string id)
+        public Account FindAccount(string name)
         {
             var filter = new BsonDocument
             {
-                { "Name", id }
+                { "Name", name }
             };
             return Accounts.Find(filter).FirstOrDefault();
         }
@@ -87,6 +87,17 @@ namespace MediaContentService.Model
             };
             return cltn.Find(filter).FirstOrDefault();
         }
+
+        public T FindObjectById<T>(string cltnName, string objectId)
+        {
+            var cltn = Database.GetCollection<T>(cltnName);
+            var filter = new BsonDocument
+            {
+                { "_id", objectId }
+            };
+            return cltn.Find(filter).FirstOrDefault();
+        }
+
 
         public IList<T> GetOneToMany<T>(string relationProp, string id)
         {
@@ -131,6 +142,7 @@ namespace MediaContentService.Model
                 cm.MapIdMember(c => c.Id).SetIdGenerator(StringObjectIdGenerator.Instance);
                 cm.MapExtraElementsMember(c => c.MetadataElements);
                 cm.UnmapProperty(c => c.Library);
+                cm.UnmapProperty(c => c.CurrentFile);
             });
 
             typedCollections[typeof(Library).Name] = "libraries";

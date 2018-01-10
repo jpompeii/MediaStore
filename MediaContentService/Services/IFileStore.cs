@@ -10,6 +10,6 @@ namespace MediaContentService.Services
     {
         string CreateFileId(string fileName = null);
         string SaveFile(string fileId, Stream inStream);
-        Stream ReadFile(string fileUrl);
+        Stream ReadFile(string fileId);
     }
 }

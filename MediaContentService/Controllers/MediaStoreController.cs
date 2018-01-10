@@ -6,11 +6,8 @@ using MediaContentService.Model;
 using MediaContentService.ValueTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using System.Net.Http;
 using System.IO;
 using MediaContentService.Services;
-using MongoDB.Bson;
 
 namespace MediaContentService.Controllers
 {
@@ -96,9 +93,12 @@ namespace MediaContentService.Controllers
                 {
                     var fileExt = Path.GetExtension(formFile.FileName);
                     var fileId = $"{fileStore.CreateFileId()}{fileExt}";
-                    var asset = new Asset();
-                    asset.Name = formFile.FileName;
-                    asset.Library = lib;
+                    var asset = new Asset
+                    {
+                        Name = formFile.FileName,
+                        Library = lib,
+                        CurrentVersion = 1
+                    };
                     asset.AssetFiles.Add(new AssetFile
                     {
                         SourceFileName = formFile.FileName,
@@ -133,6 +133,46 @@ namespace MediaContentService.Controllers
             return Ok(AssetValue.FromModel(assets));
         }
 
+        [HttpGet("libraries/{libid}/assets/{assetId}")]
+        public IActionResult GetAsset(string libid, string assetId)
+        {
+            Library lib = Context.FindObjectById<Library>(libid);
+            if (lib == null)
+                return NotFound();
+
+            Asset asset = Context.FindObjectById<Asset>(lib.AssetCollection, assetId);
+            if (asset != null)
+                return Ok(AssetValue.FromModel(asset));
+            else
+                return NotFound();
+        }
+
+        [HttpGet("libraries/{libid}/assets/{assetId}/content")]
+        public FileStreamResult GetAssetContent(string libId, string assetId)
+        {
+            Library lib = Context.FindObjectById<Library>(libId);
+            if (lib == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return null;
+            }
+
+            Asset asset = Context.FindObjectById<Asset>(lib.AssetCollection, assetId);
+            if (asset == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return null;
+            }
+            var currentFile = asset.CurrentFile;
+            if (currentFile == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return null;
+            }
+            var fstream = fileStore.ReadFile(currentFile.ResourceId);
+            return File(fstream, currentFile.MimeType);
+        }
+
         // for now
         [HttpPut("accounts/{acctName}")]
         public IActionResult CreateAccount(string acctName)
@@ -150,9 +190,5 @@ namespace MediaContentService.Controllers
             Context.Accounts.InsertOne(acct);
             return Ok(AccountValue.FromModel(acct));
         }
-
-
-
-
     }
 }

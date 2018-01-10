@@ -54,6 +54,14 @@ namespace MediaContentService.Model
             await cltn.InsertOneAsync(this);
         }
 
+        public AssetFile CurrentFile
+        {
+            get
+            {
+                return AssetFiles.Where(a => a.Version == CurrentVersion).FirstOrDefault();
+            }
+        }
+
 
         /*
     DataSets: {

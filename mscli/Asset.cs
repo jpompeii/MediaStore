@@ -6,7 +6,7 @@ namespace MediaStore.Client
 {
     public class Asset
     {
-        public string Id { get; private set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public int CurrentVersion { get; set; }
         public DateTime DateCreated { get; set; }

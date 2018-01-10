@@ -54,8 +54,7 @@ namespace MediaContentService.Services
 			string path = _hostRoot;
 			for (int i = 0; i < _currentPath.Length; ++i)
 			{
-				int count;
-				int currentDir = GetCurrentSubDir(path, out count);
+				int currentDir = GetCurrentSubDir(path, out var count);
 				_currentPath[i] = currentDir;
 				_dirCounts[i] = count;
 				if (count == 0 && i < _currentPath.Length)
@@ -75,9 +74,8 @@ namespace MediaContentService.Services
 				IEnumerable<string> subdirs = Directory.EnumerateDirectories(dir);
 				foreach (var subdir in subdirs)
 				{
-					int intValue;
 					string dirName = subdir.Substring(subdir.LastIndexOf(_sep) + 1);
-					if (Int32.TryParse(dirName, out intValue))
+					if (Int32.TryParse(dirName, out var intValue))
 					{
 						itemCount++;
 						if (intValue > currentDir)
@@ -95,8 +93,7 @@ namespace MediaContentService.Services
 
 			do
 			{
-				string relPath;
-				if (TryNextDirectory(out relPath))
+				if (TryNextDirectory(out var relPath))
 				{
 					Directory.CreateDirectory(_rootDir + relPath);
 					return relPath;
@@ -119,7 +116,7 @@ namespace MediaContentService.Services
                     IEnumerable<string> files = Directory.EnumerateFiles(currPath);
                     _currentFileCount = files.Count();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 { }
             }
             if (_currentFileCount > _itemCountThreshold)
