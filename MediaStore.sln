@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaContentService", "Medi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mscli", "mscli\mscli.csproj", "{AC5A511B-AB36-46F9-A968-3B5890C0C66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "s3cli", "s3cli\s3cli.csproj", "{A4DAFCFA-0A76-4DCD-9875-B08F8AD7654B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s3cli", "s3cli\s3cli.csproj", "{A4DAFCFA-0A76-4DCD-9875-B08F8AD7654B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageService", "StorageService\StorageService.csproj", "{9A0847E9-92F3-41C9-8F15-8B87EAF0A9B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A4DAFCFA-0A76-4DCD-9875-B08F8AD7654B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4DAFCFA-0A76-4DCD-9875-B08F8AD7654B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4DAFCFA-0A76-4DCD-9875-B08F8AD7654B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A0847E9-92F3-41C9-8F15-8B87EAF0A9B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A0847E9-92F3-41C9-8F15-8B87EAF0A9B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A0847E9-92F3-41C9-8F15-8B87EAF0A9B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A0847E9-92F3-41C9-8F15-8B87EAF0A9B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
