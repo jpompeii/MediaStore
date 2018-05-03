@@ -6,7 +6,7 @@ using MediaStore.StorageService.Model;
 
 namespace MediaStore.StorageService.Providers
 {
-    public class LocalFS : IStorageProvider
+    public class LocalFS : IStorageProvider, IDefaultStorageProvider
     {
         private string _fsRoot;
         private LocalFSContext _dataContext;

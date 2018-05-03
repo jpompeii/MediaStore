@@ -8,7 +8,7 @@ using MediaStore.StorageService.Providers;
 
 namespace MediaStore.StorageService.Services
 {
-    class StorageService : IStorageService
+    public class StorageService : IStorageService
     {
         public Type DefaultStorageProvider { get; set; }
 
@@ -19,7 +19,7 @@ namespace MediaStore.StorageService.Services
         {
             _container = container;
             _services = new ConcurrentDictionary<string, IStorageProvider>();
-            DefaultStorageProvider = Type.GetType("MediaStore.StorageService.Providers.LocalFS");
+            DefaultStorageProvider = typeof(IDefaultStorageProvider);
         }
 
         private IStorageProvider ResolveServiceAccount(string serviceAccount)

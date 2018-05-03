@@ -12,6 +12,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MediaContentService.Services;
 using Newtonsoft.Json.Serialization;
+using MediaStore.StorageService;
+using MediaStore.StorageService.Services;
+using System.Reflection;
+using MediaStore.StorageService.Providers;
 
 namespace MediaContentService
 {
@@ -31,7 +35,12 @@ namespace MediaContentService
             IFileStore fileStore = new FileStore(cache);
 
             services.AddSingleton(typeof(IFileStore), fileStore);
-            services.AddMvc().AddJsonOptions(opt =>
+            services.AddSingleton<IStorageService, StorageService>();
+            services.AddSingleton<IDefaultStorageProvider, LocalFS>();
+            var mvc = services.AddMvc();
+            var storageAssy = Assembly.Load(new AssemblyName("StorageService"));
+            mvc.AddApplicationPart(storageAssy);
+            mvc.AddJsonOptions(opt =>
             {
                 var resolver = opt.SerializerSettings.ContractResolver;
                 if (resolver != null)
